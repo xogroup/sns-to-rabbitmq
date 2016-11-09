@@ -13,6 +13,7 @@ cabal-version:       >=1.10
 executable sqs-to-rabbitmq
   hs-source-dirs:      src
   main-is:             Main.hs
+  other-modules:       Configuration
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
                      , warp >= 3.2 && < 4
@@ -21,3 +22,5 @@ executable sqs-to-rabbitmq
                      , wai
                      , wai-conduit
                      , http-types
+                     , text
+                     , unix
