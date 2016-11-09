@@ -1,9 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-module XOGroup.Network.AMQP.FromHTTP.Configuration
+module Configuration
   (
     xoConnectionOpts
   , xoQueue
   , xoExchange
+  , xoKey
   ) where
 
 import Network.AMQP(ConnectionOpts(..), plain, defaultConnectionOpts)
@@ -23,3 +24,6 @@ xoQueue = "logstashQueue"
 
 xoExchange :: Text
 xoExchange = "logstashExchange"
+
+xoKey :: Text
+xoKey = "logstash"
