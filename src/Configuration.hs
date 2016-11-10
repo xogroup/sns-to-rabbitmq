@@ -8,7 +8,7 @@ module Configuration
   ) where
 
 import Network.AMQP(ConnectionOpts(..), plain, defaultConnectionOpts)
-import Data.Text(Text)
+import Data.Text
 
 xoConnectionOpts :: ConnectionOpts
 xoConnectionOpts = defaultConnectionOpts {
