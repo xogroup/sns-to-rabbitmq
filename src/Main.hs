@@ -15,6 +15,8 @@ import Control.Monad
 maxChannels :: Word16
 maxChannels = 10000
 
+-- | Make a 'Wai.Application', given a 'Data.Pool Network.AMQP.Channel', that
+-- simply forwards the body of each request on, over a 'Channel' from the 'Pool'.
 mkApp :: Pool Channel -> Application
 mkApp pool = \ req respond -> do
   msg <- strictRequestBody req
