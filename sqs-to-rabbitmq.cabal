@@ -2,7 +2,7 @@ name:                sqs-to-rabbitmq
 version:             0.1.0.0
 synopsis:            Pump data from SQS to RabbitMQ
 description:         Send messages from Elastic Beanstalk Worker Environment SQS Daemon to RabbitMQ.
-homepage:            https://git.xogrp.com/scollins/sqs-to-rabbitmq#readme
+homepage:            https://git.xogrp.com/scollins/http-to-rabbitmq#readme
 author:              Steven Collins
 maintainer:          local-devops.group@xogrp.com
 copyright:           2016 XO Group Inc.
@@ -15,12 +15,12 @@ executable sqs-to-rabbitmq
   main-is:             Main.hs
   other-modules:       Configuration
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5
-                     , warp >= 3.2 && < 4
-                     , amqp >= 0.14 && < 1
-                     , conduit-combinators >= 1.0 && < 2
-                     , wai
-                     , wai-conduit
+  build-depends:       amqp >= 0.14 && < 1
+                     , base >= 4.7 && < 5
+                     , bytestring >= 0.10.8.1
                      , http-types
+                     , resource-pool
                      , text
                      , unix
+                     , wai
+                     , warp >= 3.2 && < 4
