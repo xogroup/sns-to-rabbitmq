@@ -1,0 +1,7 @@
+# Ignore everything except for a few isolated exceptions.
+**
+!src/
+!config/
+!*.hs
+!LICENSE
+!bin/
