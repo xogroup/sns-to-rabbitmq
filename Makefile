@@ -12,7 +12,7 @@ VERSION=$$(git rev-parse --short HEAD)
 
 docker-build:
 	mkdir -p bin
-	docker run --rm -v $(PWD):/home/haskell/app -v $(HOME)/.stack:/home/haskell/.stack xolocalvendors/haskellbox:latest sh -c 'stack --system-ghc setup && stack --system-ghc install --ghc-options " -threaded -with-rtsopts=-N -static -optl-static" && mv /home/haskell/.local/bin/* /home/haskell/app/bin/'
+	docker run --rm -v $(PWD):/home/haskell/app -v $(HOME)/.stack:/home/haskell/.stack -w /home/haskell/app xolocalvendors/haskellbox:latest sh -c 'stack clean  && stack --system-ghc build --ghc-options " -threaded -with-rtsopts=-N" && stack install && mv /home/haskell/.local/bin/* /home/haskell/app/bin/'
 	docker build -t $(NAME) -f docker/Dockerfile .
 
 
