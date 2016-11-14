@@ -1,0 +1,4 @@
+FROM alpine-ghc-stack:latest
+ADD ./ /usr/src/myapp
+WORKDIR /usr/src/myapp
+RUN stack --local-bin-path /bin install --ghc-options ' -optl-static -fPIC -threaded'
