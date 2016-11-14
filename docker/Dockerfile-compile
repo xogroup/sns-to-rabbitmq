@@ -1,0 +1,24 @@
+FROM xolocalvendors/stackhaskellbox:1.1.2
+# Build dependencies stub in early layers
+USER root
+WORKDIR /h/app
+RUN mkdir http-to-rabbitmq-dependencies
+COPY http-to-rabbitmq-dependencies http-to-rabbitmq-dependencies/
+WORKDIR http-to-rabbitmq-dependencies
+
+ENV GHC_OPTS  -optl-static -fPIC -threaded -with-rtsopts=-N
+
+RUN stack build --split-objs --ghc-options "$GHC_OPTS"
+# Now build our code
+WORKDIR /h/app
+COPY . /h/app/
+RUN chown root:root .
+RUN stack --local-bin-path /bin \
+    build --copy-bins --test --split-objs --ghc-options "$GHC_OPTS"
+RUN curl -Lo /usr/local/bin/upx \
+    https://github.com/lalyos/docker-upx/releases/download/v3.91/upx \
+    && chmod 755 /usr/local/bin/upx
+RUN upx --best --ultra-brute /bin/http-to-rabbitmq
+RUN chmod 755 $INIT
+RUN chown -R user:nogroup .
+USER user
