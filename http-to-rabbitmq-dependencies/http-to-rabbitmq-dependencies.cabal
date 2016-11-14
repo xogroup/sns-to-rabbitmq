@@ -1,7 +1,7 @@
-name:                http-to-rabbitmq
+name:                http-to-rabbitmq-dependencies
 version:             0.1.0.0
-synopsis:            Pump data from SQS to RabbitMQ
-description:         Send messages from Elastic Beanstalk Worker Environment SQS Daemon to RabbitMQ.
+synopsis:            Dependencies Stub
+description:         Stub containing http-to-rabbitmq dependencies (to speed up Docker builds)
 homepage:            https://git.xogrp.com/scollins/http-to-rabbitmq#readme
 author:              Steven Collins
 maintainer:          local-devops.group@xogrp.com
@@ -10,10 +10,7 @@ category:            Web
 build-type:          Simple
 cabal-version:       >=1.10
 
-executable http-to-rabbitmq
-  hs-source-dirs:      src
-  main-is:             Main.hs
-  other-modules:       Configuration
+library
   default-language:    Haskell2010
   build-depends:       amqp >= 0.14 && < 1
                      , base >= 4.7 && < 5

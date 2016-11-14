@@ -1,9 +1,11 @@
 # Ignore everything except for a few isolated exceptions.
 **
-!src/
-!config/
-!*.hs
-!LICENSE
-!bin/
-!*.cabal
+!http-to-rabbitmq*
+!*/src/
+!*/config/
+!*/*.hs
+!*/LICENSE
+!*/bin/
+!*/*.cabal
 !stack.yaml
+!*/stack.yaml
