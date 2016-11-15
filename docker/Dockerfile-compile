@@ -23,6 +23,5 @@ RUN curl -Lo /usr/local/bin/upx \
     https://github.com/lalyos/docker-upx/releases/download/v3.91/upx \
     && chmod 755 /usr/local/bin/upx
 RUN upx --best --ultra-brute /bin/http-to-rabbitmq
-RUN chmod 755 $INIT
 RUN chown -R user:nogroup .
-USER user
+# USER user <-- this messes up strip-docker-image.
