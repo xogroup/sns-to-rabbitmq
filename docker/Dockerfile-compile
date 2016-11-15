@@ -4,10 +4,10 @@ USER root
 WORKDIR /h/app
 RUN mkdir http-to-rabbitmq-dependencies
 # Try not to bust the cache.
-COPY http-to-rabbitmq-dependencies/Setup.hs \
-     http-to-rabbitmq-dependencies/stack.yaml \
-     http-to-rabbitmq-dependencies/http-to-rabbitmq-dependencies.cabal \
-     http-to-rabbitmq-dependencies/
+ADD http-to-rabbitmq-dependencies/Setup.hs \
+    http-to-rabbitmq-dependencies/stack.yaml \
+    http-to-rabbitmq-dependencies/http-to-rabbitmq-dependencies.cabal \
+    http-to-rabbitmq-dependencies/
 WORKDIR http-to-rabbitmq-dependencies
 
 ENV GHC_OPTS  -optl-static -fPIC -threaded -with-rtsopts=-N
