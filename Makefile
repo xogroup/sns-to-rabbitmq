@@ -36,8 +36,8 @@ docker-run: docker-build
 	docker run -d -p 3000:3000 $(NAME)
 
 jenkins-build: docker-build
-	docker tag -f $(NAME) $(NAME):$(VERSION)
-	docker tag -f $(NAME) $(NAME):latest 2>/dev/null
+	docker tag $(NAME) $(NAME):$(VERSION)
+	docker tag $(NAME) $(NAME):latest 2>/dev/null
 
 jenkins-push:
 	docker push $(NAME):$(VERSION)
