@@ -1,4 +1,4 @@
-FROM xolocalvendors/stackhaskellbox:1.1.2
+FROM xolocalvendors/stackhaskellbox:1.1.2-xo1
 # Build dependencies stub in early layers
 USER root
 WORKDIR /h/app
