@@ -35,9 +35,11 @@ docker-build: docker-strip docker/Dockerfile
 docker-run: docker-build
 	docker run -d -p 3000:3000 $(NAME)
 
+# Seriously, only call this ON JENKINS or other places with ancient Docker
+# versions
 jenkins-build: docker-build
-	docker tag $(NAME) $(NAME):$(VERSION)
-	docker tag $(NAME) $(NAME):latest 2>/dev/null
+	docker tag -f $(NAME) $(NAME):$(VERSION)
+	docker tag -f $(NAME) $(NAME):latest 2>/dev/null
 
 jenkins-push:
 	docker push $(NAME):$(VERSION)
