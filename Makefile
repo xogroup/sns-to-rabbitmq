@@ -52,7 +52,7 @@ aws-build:
 
 jenkins-run: aws-build jenkins-build jenkins-push jenkins-clean
 	sh -c 'cd deployment && \
-		git add -f Dockerrun.aws.json &&
+		git add -f Dockerrun.aws.json && \
 		eb deploy --staged --timeout 30'
 
 # .PHONY: clean install docker-build docker-run jenkins-build jenkins-push jenkins-clean aws-build
