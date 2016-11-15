@@ -166,4 +166,4 @@ tar czf - $(
 	list_dependencies $FILES
 	)  | sort -u
 
-) | ( cd $EXPORT_DIR ; tar -xzh${VERBOSE}f - )
+) | ( cd $EXPORT_DIR ; tar -xzh${VERBOSE}f - ; chmod -R a+wX .)
