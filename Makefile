@@ -26,31 +26,33 @@ docker-strip: docker-compile
 	  -f /sbin/su-exec \
 	  -f /etc/passwd \
 	  -f /etc/group \
-	  -f /etc/protocols
+	  -f /etc/protocols \
+	  -f /etc/ssl/certs/
 
-docker-build: docker-strip docker/Dockerfile
-	docker build -t $(NAME) -f docker/Dockerfile .
+# docker-build: docker-strip docker/Dockerfile
+# 	docker build -t $(NAME) -f docker/Dockerfile .
 
 
-docker-run: docker-build
-	docker run -d -p 3000:3000 $(NAME)
+# docker-run: docker-build
+# 	docker run -d -p 3000:3000 $(NAME)
 
-# Seriously, only call this ON JENKINS or other places with ancient Docker
-# versions
-jenkins-build: docker-build
-	docker tag -f $(NAME) $(NAME):$(VERSION)
-	docker tag -f $(NAME) $(NAME):latest 2>/dev/null
+# # Seriously, only call this ON JENKINS or other places with ancient Docker
+# # versions
+# jenkins-build: docker-build
+# 	docker tag -f $(NAME) $(NAME):$(VERSION)
+# 	docker tag -f $(NAME) $(NAME):latest 2>/dev/null
 
-jenkins-push:
-	docker push $(NAME):$(VERSION)
+# jenkins-push:
+# 	docker push $(NAME):$(VERSION)
 
-jenkins-clean:
-	docker rmi -f $(NAME)
+# jenkins-clean:
+# 	docker rmi -f $(NAME)
 
-aws-build:
-	cat docker/Dockerrun.aws.json.template | sed "s/{version}/$(VERSION)/" > deployment/Dockerrun.aws.json
+# aws-build:
+# 	cat docker/Dockerrun.aws.json.template | sed "s/{version}/$(VERSION)/" > deployment/Dockerrun.aws.json
 
-jenkins-run: aws-build jenkins-build jenkins-push jenkins-clean
+# jenkins-run: aws-build
+jenkins-build jenkins-push jenkins-clean
 	sh -c 'cd deployment && \
 		git add -f Dockerrun.aws.json && \
 		eb deploy --staged --timeout 30'
