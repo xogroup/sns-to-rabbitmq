@@ -25,3 +25,7 @@ executable http-to-rabbitmq
                      , unix
                      , wai
                      , warp >= 3.2 && < 4
+                     , http-client-tls
+                     , aeson
+                     , containers
+                     , http-client

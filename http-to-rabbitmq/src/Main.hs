@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Network.Wai
 import Network.HTTP.Types
+import Network.HTTP.Client
+import Network.HTTP.Client.TLS
 import Network.Wai.Handler.Warp (run)
 import Network.AMQP
 import Configuration
@@ -10,7 +12,9 @@ import Control.Exception
 import Data.Pool
 import Data.Word
 import Data.Text.Encoding
+import Data.Aeson
 import Control.Monad
+import qualified Data.Map.Lazy as Map
 
 maxChannels :: Word16
 maxChannels = 10000
@@ -22,14 +26,32 @@ mkApp pool = \ req respond -> do
   msg <- strictRequestBody req
   let contentType = (liftM decodeUtf8) $
                     lookup "Content-Type" $
-                    requestHeaders req
-  _ <- safeRabbitAction pool $
-    \chan ->
-      publishMsg chan xoExchange xoKey
-      newMsg { msgBody = msg
-             , msgDeliveryMode = Just Persistent
-             , msgContentType = contentType}
-  respond $ responseLBS status200 [] ""
+                    Network.Wai.requestHeaders req
+  let amzMsgType = (liftM decodeUtf8) $
+                   lookup "x-amz-sns-message-type" $
+                   Network.Wai.requestHeaders req
+  case amzMsgType of
+    Just "SubscriptionConfirmation" -> do
+      manager <- newManager tlsManagerSettings
+      request <- parseRequest amzSubscriptionURL
+      _ <- httpLbs request manager
+      respond $ responseLBS status200 [] ""
+      where
+        amzSubscriptionURL =
+          case Map.lookup "SubscribeURL" amzJsonMap of
+            Just u -> u
+        amzJsonMap =
+          case decode msg :: Maybe (Map.Map String String) of
+            Just m -> m
+    Just "Notification" -> do
+      _ <- safeRabbitAction pool $
+        \chan ->
+          publishMsg chan xoExchange xoKey
+          newMsg { msgBody = msg
+                 , msgDeliveryMode = Just Persistent
+                 , msgContentType = contentType}
+      respond $ responseLBS status200 [] ""
+    _ -> respond $ responseLBS status400 [] ""
 
 main :: IO ()
 main = do

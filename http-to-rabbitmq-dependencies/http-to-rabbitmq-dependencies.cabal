@@ -21,3 +21,6 @@ library
                      , unix
                      , wai
                      , warp >= 3.2 && < 4
+                     , http-client-tls
+                     , aeson
+                     , containers
