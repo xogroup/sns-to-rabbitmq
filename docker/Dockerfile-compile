@@ -1,19 +1,4 @@
-FROM xolocalvendors/stackhaskellbox:1.1.2-xo2
-# Build dependencies stub in early layers
-USER root
-WORKDIR /h/app
-RUN mkdir http-to-rabbitmq-dependencies
-# Try not to bust the cache.
-ADD http-to-rabbitmq-dependencies/Setup.hs \
-    http-to-rabbitmq-dependencies/stack.yaml \
-    http-to-rabbitmq-dependencies/http-to-rabbitmq-dependencies.cabal \
-    http-to-rabbitmq-dependencies/
-WORKDIR http-to-rabbitmq-dependencies
-
-ENV GHC_OPTS  -optl-static -fPIC -threaded -with-rtsopts=-N
-
-RUN stack build --split-objs --ghc-options "$GHC_OPTS"
-# Now build our code
+FROM xolocalvendors/http-to-rabbitmq-dependencies:latest
 WORKDIR /h/app
 COPY . /h/app/
 RUN chown root:root .
