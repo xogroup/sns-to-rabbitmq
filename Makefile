@@ -11,11 +11,18 @@ VERSION=$$(git rev-parse --short HEAD)
 # 	npm install
 
 sources = http-to-rabbitmq/src/Main.hs http-to-rabbitmq/src/Configuration.hs
-other-deps = stack.yaml http-to-rabbitmq-dependencies/stack.yaml \
+deps = http-to-rabbitmq-dependencies/stack.yaml \
 	http-to-rabbitmq/http-to-rabbitmq.cabal \
 	http-to-rabbitmq-dependencies/http-to-rabbitmq-dependencies.cabal
 
-docker-compile: $(sources) $(other-deps) docker/Dockerfile-compile
+docker-dependencies: $(deps) docker/Dockerfile-dependencies
+	docker build -t $(NAME)-dependencies:latest \
+	  -f docker/Dockerfile-dependencies .
+
+docker-dependencies-push: docker-dependencies
+	docker push $(NAME)-dependencies:latest
+
+docker-compile: $(sources) stack.yaml docker/Dockerfile-compile
 	docker build -t $(NAME)-compiled:latest -f docker/Dockerfile-compile .
 
 docker-strip: docker-compile
@@ -30,7 +37,8 @@ docker-strip: docker-compile
 	  -f /etc/ssl/certs/b204d74a.0 # <- cert SNS uses
 
 docker-build: docker-strip docker/Dockerfile
-	docker build -t $(NAME) -f docker/Dockerfile .
+	docker build -t $(NAME):$(VERSION) -f docker/Dockerfile .
+
 
 
 docker-run: docker-build
@@ -57,4 +65,4 @@ jenkins-run: aws-build jenkins-build jenkins-push jenkins-clean
 		eb deploy --staged --timeout 30'
 
 # .PHONY: clean install docker-build docker-run jenkins-build jenkins-push jenkins-clean aws-build
-.PHONY: docker-build docker-run jenkins-build jenkins-push jenkins-clean aws-build docker-compile docker-strip jenkins-run
+.PHONY: docker-build docker-run jenkins-build jenkins-push jenkins-clean aws-build docker-compile docker-strip jenkins-run docker-dependencies docker-dependencies-push
