@@ -5,10 +5,13 @@ module Configuration
   , xoQueue
   , xoExchange
   , xoKey
+  , xoWaiUsername
+  , xoWaiPassword
   ) where
 
 import Network.AMQP(ConnectionOpts(..), plain, defaultConnectionOpts)
 import Data.Text
+import qualified Data.ByteString as B
 
 xoConnectionOpts :: ConnectionOpts
 xoConnectionOpts = defaultConnectionOpts {
@@ -27,3 +30,9 @@ xoExchange = "logstashExchange"
 
 xoKey :: Text
 xoKey = "logstash"
+
+xoWaiUsername :: B.ByteString
+xoWaiUsername = "***REMOVED***"
+
+xoWaiPassword :: B.ByteString
+xoWaiPassword = "***REMOVED***"

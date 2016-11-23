@@ -1,9 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric #-}
 import Network.Wai
 import Network.HTTP.Types
 import Network.HTTP.Client
 import Network.HTTP.Client.TLS
 import Network.Wai.Handler.Warp (run)
+import Network.Wai.Middleware.HttpAuth
 import Network.AMQP
 import Configuration
 import Control.Concurrent
@@ -15,6 +17,7 @@ import Data.Text.Encoding
 import Data.Aeson
 import Control.Monad
 import qualified Data.Map.Lazy as Map
+
 
 maxChannels :: Word16
 maxChannels = 10000
@@ -53,6 +56,11 @@ mkApp pool = \ req respond -> do
       respond $ responseLBS status200 [] ""
     _ -> respond $ responseLBS status400 [] ""
 
+authentication :: Middleware
+authentication = basicAuth
+                 (\u p -> return $ u == xoWaiUsername && p == xoWaiPassword)
+                 $ "realm" :: AuthSettings
+
 main :: IO ()
 main = do
   -- main is mostly cleanup/handler stuff
@@ -80,7 +88,7 @@ main = do
   finally
     (do
         safeRabbitAction chanPool initializeQueue
-        run 3000 (mkApp chanPool))
+        run 3000 $ authentication $ mkApp chanPool)
     (destroyAllResources connPool)
 
 -- | Get a channel and put it in publisher confirm mode. This function may
