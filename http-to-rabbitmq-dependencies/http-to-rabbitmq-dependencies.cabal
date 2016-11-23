@@ -20,6 +20,7 @@ library
                      , text
                      , unix
                      , wai
+                     , wai-extra
                      , warp >= 3.2 && < 4
                      , http-client-tls
                      , aeson
