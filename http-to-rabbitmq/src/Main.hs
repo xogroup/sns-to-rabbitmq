@@ -2,7 +2,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 import Network.Wai
 import Network.HTTP.Types
-import Network.HTTP.Client
+import Network.HTTP.Client hiding (Request, Response)
 import Network.HTTP.Client.TLS
 import Network.Wai.Handler.Warp (run)
 import Network.Wai.Middleware.HttpAuth
@@ -26,40 +26,50 @@ maxChannels = 10000
 -- simply forwards the body of each request on, over a 'Channel' from the 'Pool'.
 mkApp :: Pool Channel -> Application
 mkApp pool = \ req respond -> do
-  msg <- strictRequestBody req
-  let contentType = (liftM decodeUtf8) $
-                    lookup "Content-Type" $
-                    Network.Wai.requestHeaders req
-  let amzMsgType = (liftM decodeUtf8) $
-                   lookup "x-amz-sns-message-type" $
-                   Network.Wai.requestHeaders req
-  case amzMsgType of
-    Just "SubscriptionConfirmation" -> do
-      manager <- newManager tlsManagerSettings
-      request <- parseRequest amzSubscriptionURL
-      _ <- httpLbs request manager
-      respond $ responseLBS status200 [] ""
-      where
-        amzSubscriptionURL =
-          case Map.lookup "SubscribeURL" amzJsonMap of
-            Just u -> u
-        amzJsonMap =
-          case decode msg :: Maybe (Map.Map String String) of
-            Just m -> m
-    Just "Notification" -> do
-      _ <- safeRabbitAction pool $
-        \chan ->
-          publishMsg chan xoExchange xoKey
-          newMsg { msgBody = msg
-                 , msgDeliveryMode = Just Persistent
-                 , msgContentType = contentType}
-      respond $ responseLBS status200 [] ""
-    _ -> respond $ responseLBS status400 [] ""
+  if isHealthCheck req then respondBlank200 respond else do
+    msg <- strictRequestBody req
+    let contentType = (liftM decodeUtf8) $
+                      lookup "Content-Type" $
+                      Network.Wai.requestHeaders req
+    let amzMsgType = (liftM decodeUtf8) $
+                     lookup "x-amz-sns-message-type" $
+                     Network.Wai.requestHeaders req
+    case amzMsgType of
+      Just "SubscriptionConfirmation" -> do
+        manager <- newManager tlsManagerSettings
+        request <- parseRequest amzSubscriptionURL
+        _ <- httpLbs request manager
+        respondBlank200 respond
+          where
+            amzSubscriptionURL =
+              case Map.lookup "SubscribeURL" amzJsonMap of
+                Just u -> u
+            amzJsonMap =
+              case decode msg :: Maybe (Map.Map String String) of
+                Just m -> m
+      Just "Notification" -> do
+        _ <- safeRabbitAction pool $
+          \chan ->
+            publishMsg chan xoExchange xoKey
+            newMsg { msgBody = msg
+                   , msgDeliveryMode = Just Persistent
+                   , msgContentType = contentType}
+        respondBlank200 respond
+      _ -> respond $ responseLBS status400 [] ""
+
+respondBlank200 :: (Response -> IO ResponseReceived) -> IO ResponseReceived
+respondBlank200 respond = respond $ responseLBS status200 [] ""
 
 authentication :: Middleware
 authentication = basicAuth
                  (\u p -> return $ u == xoWaiUsername && p == xoWaiPassword)
-                 ("realm" :: AuthSettings)
+                 ("realm" {authIsProtected = return . not . isHealthCheck}
+                   :: AuthSettings)
+
+isHealthCheck :: Request -> Bool
+isHealthCheck req = case (requestMethod req, pathInfo req) of
+                      (m, [_, "healthy"]) | m == methodGet -> True
+                      _ -> False
 
 main :: IO ()
 main = do
