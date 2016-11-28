@@ -68,7 +68,7 @@ authentication = basicAuth
 
 isHealthCheck :: Request -> Bool
 isHealthCheck req = case (requestMethod req, pathInfo req) of
-                      (m, [_, "healthy"]) | m == methodGet -> True
+                      (m, ["healthy"]) | m == methodGet -> True
                       _ -> False
 
 main :: IO ()
