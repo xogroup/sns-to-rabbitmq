@@ -54,7 +54,7 @@ jenkins-push:
 	docker push $(NAME):$(VERSION)
 
 jenkins-clean:
-	docker rmi -f $(NAME)
+	docker rmi -f $(NAME):$(VERSION)
 
 aws-build:
 	cat docker/Dockerrun.aws.json.template | sed "s/{version}/$(VERSION)/" > deployment/Dockerrun.aws.json
