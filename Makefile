@@ -47,7 +47,7 @@ docker-run: docker-build
 # Seriously, only call this ON JENKINS or other places with ancient Docker
 # versions
 jenkins-build: docker-build
-	docker tag -f $(NAME) $(NAME):$(VERSION)
+	docker tag -f $(NAME):$(VERSION) $(NAME) 2>/dev/null
 	docker tag -f $(NAME) $(NAME):latest 2>/dev/null
 
 jenkins-push:
@@ -59,7 +59,7 @@ jenkins-clean:
 aws-build:
 	cat docker/Dockerrun.aws.json.template | sed "s/{version}/$(VERSION)/" > deployment/Dockerrun.aws.json
 
-jenkins-run: aws-build jenkins-build jenkins-push jenkins-clean
+jenkins-run: aws-build jenkins-push jenkins-clean
 	sh -c 'cd deployment && \
 		git add -f Dockerrun.aws.json && \
 		eb deploy --staged --timeout 30'
