@@ -59,7 +59,7 @@ mkApp pool = \ req respond -> do
 authentication :: Middleware
 authentication = basicAuth
                  (\u p -> return $ u == xoWaiUsername && p == xoWaiPassword)
-                 $ "realm" :: AuthSettings
+                 ("realm" :: AuthSettings)
 
 main :: IO ()
 main = do
