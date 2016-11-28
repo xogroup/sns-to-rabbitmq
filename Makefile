@@ -59,7 +59,7 @@ jenkins-clean:
 aws-build:
 	cat docker/Dockerrun.aws.json.template | sed "s/{version}/$(VERSION)/" > deployment/Dockerrun.aws.json
 
-jenkins-run: aws-build jenkins-push jenkins-clean
+jenkins-run: aws-build docker-build jenkins-push jenkins-clean
 	sh -c 'cd deployment && \
 		git add -f Dockerrun.aws.json && \
 		eb deploy --staged --timeout 30'
