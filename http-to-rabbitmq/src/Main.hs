@@ -17,7 +17,7 @@ import Data.Text.Encoding
 import Data.Aeson
 import Control.Monad
 import qualified Data.Map.Lazy as Map
-import qualified Data.ByteString.Lazy as BL
+
 
 maxChannels :: Word16
 maxChannels = 10000
@@ -50,22 +50,12 @@ mkApp pool = \ req respond -> do
       Just "Notification" -> do
         _ <- safeRabbitAction pool $
           \chan ->
-            publishMsg chan xoExchange xoKey $ wrapMessage msg
+            publishMsg chan xoExchange xoKey
+            newMsg { msgBody = msg
+                   , msgDeliveryMode = Just Persistent
+                   , msgContentType = contentType}
         respondBlank200 respond
       _ -> respond $ responseLBS status400 [] ""
-
-wrapMessage :: BL.ByteString -> Message
-wrapMessage msgContent = newMsg { msgBody = wrapped
-                                , msgDeliveryMode = Just Persistent
-                                , msgContentType = Just "application/json"}
-  where
-    wrapped = encode $ object ["message" .= parsed]
-    parsed :: Value
-    -- BL.toStrict is a very expensive operation, but it should only
-    -- happen if we get a message which is invalid JSON. Which
-    -- SHOULDN'T ever happen.
-    parsed = maybe (String $ decodeUtf8 $ BL.toStrict $ msgContent)
-             id $ decode msgContent
 
 respondBlank200 :: (Response -> IO ResponseReceived) -> IO ResponseReceived
 respondBlank200 respond = respond $ responseLBS status200 [] ""
