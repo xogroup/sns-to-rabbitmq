@@ -29,7 +29,7 @@ docker-strip: docker-compile
 	docker/strip-docker-image/strip-docker-image \
 	  -i $(NAME)-compiled:latest -t $(NAME)-stripped:latest -v \
 	  -f /bin/http-to-rabbitmq \
-	  -f /sbin/dumb-init \
+	  -f /sbin/pid1 \
 	  -f /sbin/su-exec \
 	  -f /etc/passwd \
 	  -f /etc/group \
@@ -42,7 +42,7 @@ docker-build: docker-strip docker/Dockerfile
 
 
 docker-run: docker-build
-	docker run -d -p 3000:3000 $(NAME)
+	docker run -d -p 3000:3000 $(NAME):$(VERSION)
 
 # Seriously, only call this ON JENKINS or other places with ancient Docker
 # versions

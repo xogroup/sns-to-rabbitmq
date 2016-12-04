@@ -1,5 +1,5 @@
 # Build dependencies container.
-FROM xolocalvendors/stackhaskellbox:1.1.2-xo2
+FROM xolocalvendors/stackhaskellbox:1.1.2-xo3
 USER root
 WORKDIR /h/app
 RUN mkdir http-to-rabbitmq-dependencies

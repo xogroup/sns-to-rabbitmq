@@ -10,5 +10,5 @@ MAINTAINER XO Group Team
 EXPOSE 3000
 
 USER root
-ENTRYPOINT ["/sbin/dumb-init"]
+ENTRYPOINT ["/sbin/pid1"]
 CMD ["/sbin/su-exec", "user", "/bin/http-to-rabbitmq"]
