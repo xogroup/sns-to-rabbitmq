@@ -83,7 +83,7 @@ main = do
   -- chanPool: many "stripes" but only one channel per stripe, because
   -- each thread should only need one channel.
   chanPool <- createPool (safeRabbitAction connPool getConfirmModeChan)
-              closeChannel (fromIntegral maxChannels) 600 1
+              closeChannel (fromIntegral maxChannels) 3 1
 
   let handler = do
         destroyAllResources connPool
@@ -136,5 +136,5 @@ safeRabbitAction pool f =
      -- above ensures that the 'Connection' or 'Channel' involved is destroyed
      -- if any exception whatsoever occurs.
      case r of
-       Left _ -> safeRabbitAction pool f
+       Left _ -> threadDelay 500000 >> safeRabbitAction pool f
        Right a -> return a
