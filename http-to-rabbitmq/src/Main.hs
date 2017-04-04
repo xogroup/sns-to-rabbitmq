@@ -20,7 +20,7 @@ import qualified Data.Map.Lazy as Map
 
 
 maxChannels :: Word16
-maxChannels = 10000
+maxChannels = 250
 
 -- | Make a 'Wai.Application', given a 'Data.Pool Network.AMQP.Channel', that
 -- simply forwards the body of each request on, over a 'Channel' from the 'Pool'.
@@ -128,7 +128,10 @@ selectClosedExceptions ex = case ex of
 -- | Perform an action repeatedly until no ChannelClosedException
 -- or ConnectionClosedException occurs.
 safeRabbitAction :: Pool b -> (b -> IO a) -> IO a
-safeRabbitAction pool f =
+safeRabbitAction pool f = safeRabbitActionRetry pool f 500000
+
+safeRabbitActionRetry :: Pool b -> (b -> IO a) -> Integer -> IO a
+safeRabbitActionRetry pool f usec =
   do r <- tryJust selectClosedExceptions $
           withResource pool f
      -- by Haskell convention, 'Left e' means an error 'e' occurred; 'Right a'
@@ -136,5 +139,6 @@ safeRabbitAction pool f =
      -- above ensures that the 'Connection' or 'Channel' involved is destroyed
      -- if any exception whatsoever occurs.
      case r of
-       Left _ -> threadDelay 500000 >> safeRabbitAction pool f
+       Left _ -> threadDelay (fromInteger usec)
+                 >> safeRabbitActionRetry pool f (usec * 2)
        Right a -> return a
