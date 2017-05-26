@@ -97,7 +97,7 @@ main = do
 
   finally
     (do
-        safeRabbitAction chanPool initializeQueue
+        -- safeRabbitAction chanPool initializeQueue
         run 3000 $ authentication $ mkApp chanPool)
     (destroyAllResources connPool)
 
@@ -111,8 +111,9 @@ getConfirmModeChan conn = do
 
 -- | Initialize the configured queue and exchange. This function may fail
 -- and/or throw an exception.
-initializeQueue :: Channel -> IO ()
-initializeQueue chan = do
+-- NOTE: currently unused.
+_initializeQueue :: Channel -> IO ()
+_initializeQueue chan = do
   _ <- declareQueue chan newQueue {queueName = xoQueue}
   declareExchange chan newExchange { exchangeName = xoExchange
                                    , exchangeType = "direct"}

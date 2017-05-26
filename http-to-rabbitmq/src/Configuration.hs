@@ -26,7 +26,7 @@ xoQueue :: Text
 xoQueue = "logstashQueue"
 
 xoExchange :: Text
-xoExchange = "logstashExchange"
+xoExchange = "logstashFanout"
 
 xoKey :: Text
 xoKey = "logstash"
