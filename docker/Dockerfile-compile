@@ -3,7 +3,8 @@ WORKDIR /h/app
 COPY . /h/app/
 RUN chown root:root .
 RUN stack --local-bin-path /bin \
-    build --copy-bins --test --split-objs --ghc-options "$GHC_OPTS"
+    build --copy-bins --test --executable-profiling --split-objs --ghc-options "$GHC_OPTS"
 RUN upx --best --ultra-brute /bin/http-to-rabbitmq
 RUN chown -R user:nogroup .
+RUN chown -R user:nogroup /bin
 # USER user <-- this messes up strip-docker-image.
