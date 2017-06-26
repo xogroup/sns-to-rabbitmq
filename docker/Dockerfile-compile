@@ -6,5 +6,5 @@ RUN stack --local-bin-path /bin \
     build --copy-bins --test --executable-profiling --split-objs --ghc-options "$GHC_OPTS"
 RUN upx --best --ultra-brute /bin/http-to-rabbitmq
 RUN chown -R user:nogroup .
-RUN chown -R user:nogroup /
+RUN chown -fR user:nogroup / || true
 # USER user <-- this messes up strip-docker-image.

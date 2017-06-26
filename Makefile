@@ -23,7 +23,7 @@ docker-dependencies-push: docker-dependencies
 	docker push $(NAME)-dependencies:latest
 
 docker-compile: $(sources) stack.yaml docker/Dockerfile-compile
-	docker build --pull -t $(NAME)-compiled:latest -f docker/Dockerfile-compile .
+	docker build -t $(NAME)-compiled:latest -f docker/Dockerfile-compile .
 
 docker-strip: docker-compile
 	docker/strip-docker-image/strip-docker-image \
