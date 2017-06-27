@@ -10,6 +10,6 @@ ADD http-to-rabbitmq-dependencies/Setup.hs \
     http-to-rabbitmq-dependencies/
 WORKDIR http-to-rabbitmq-dependencies
 
-ENV GHC_OPTS  -optl-static -fPIC -threaded -with-rtsopts=-N -rtsopts=all -prof -fno-prof-count-entries -fprof-auto
+ENV GHC_OPTS  -optl-static -fPIC -threaded -with-rtsopts=-N
 
 RUN stack build --split-objs --ghc-options "$GHC_OPTS"
