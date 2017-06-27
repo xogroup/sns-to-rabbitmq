@@ -37,7 +37,7 @@ docker-strip: docker-compile
 	  -f /etc/ssl/certs/b204d74a.0 # <- cert SNS uses
 
 docker-build: docker-strip docker/Dockerfile
-	docker build -t $(NAME):$(VERSION) -f docker/Dockerfile .
+	docker build --pull -t $(NAME):$(VERSION) -f docker/Dockerfile .
 
 
 
