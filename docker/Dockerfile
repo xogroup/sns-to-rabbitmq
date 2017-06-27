@@ -11,4 +11,4 @@ EXPOSE 3000
 
 USER root
 ENTRYPOINT ["/sbin/dumb-init"]
-CMD ["/sbin/su-exec", "user", "/bin/http-to-rabbitmq", "+RTS", "-S", "-G1"]
+CMD ["/sbin/su-exec", "user", "/bin/http-to-rabbitmq"]
