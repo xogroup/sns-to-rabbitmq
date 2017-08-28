@@ -1,15 +1,6 @@
 NAME=xolocalvendors/http-to-rabbitmq
 VERSION=$$(git rev-parse --short HEAD)
 
-# clean:
-# 	@rm -f npm-shrinkwrap.json
-# 	make install
-# 	shonkwrap
-
-# install:
-# 	@rm -rf ./node_modules
-# 	npm install
-
 sources = http-to-rabbitmq/src/Main.hs http-to-rabbitmq/src/Configuration.hs
 deps = http-to-rabbitmq-dependencies/stack.yaml \
 	http-to-rabbitmq/http-to-rabbitmq.cabal \
@@ -44,25 +35,4 @@ docker-build: docker-strip docker/Dockerfile
 docker-run: docker-build
 	docker run -d -p 3000:3000 $(NAME)
 
-# Seriously, only call this ON JENKINS or other places with ancient Docker
-# versions
-jenkins-build: docker-build
-	docker tag -f $(NAME):$(VERSION) $(NAME) 2>/dev/null
-	docker tag -f $(NAME) $(NAME):latest 2>/dev/null
-
-jenkins-push:
-	docker push $(NAME):$(VERSION)
-
-jenkins-clean:
-	docker rmi -f $(NAME):$(VERSION)
-
-aws-build:
-	cat docker/Dockerrun.aws.json.template | sed "s/{version}/$(VERSION)/" > deployment/Dockerrun.aws.json
-
-jenkins-run: aws-build docker-build jenkins-push jenkins-clean
-	sh -c 'cd deployment && \
-		git add -f Dockerrun.aws.json && \
-		eb deploy --staged --timeout 30'
-
-# .PHONY: clean install docker-build docker-run jenkins-build jenkins-push jenkins-clean aws-build
-.PHONY: docker-build docker-run jenkins-build jenkins-push jenkins-clean aws-build docker-compile docker-strip jenkins-run docker-dependencies docker-dependencies-push
+.PHONY: docker-build docker-run docker-compile docker-strip docker-dependencies docker-dependencies-push
